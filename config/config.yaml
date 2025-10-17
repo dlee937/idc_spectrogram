@@ -1,0 +1,174 @@
+# RF Signal Detection Project Configuration
+# Central configuration file for hyperparameters and paths
+
+# ============================================================================
+# Data Specifications
+# ============================================================================
+data:
+  # RF Parameters
+  center_frequency: 2.437e9  # Hz (2.437 GHz - Wi-Fi Channel 6)
+  bandwidth: 20e6             # Hz (20 MHz)
+  sample_rate: 20e6           # Hz (20 MS/s)
+
+  # Frequency range
+  freq_start: 2.427e9         # Hz (2.427 GHz)
+  freq_end: 2.447e9           # Hz (2.447 GHz)
+
+  # File formats
+  dtype: 'sc16'               # 'sc16' or 'sc32'
+  file_extension: '.sc16'
+
+  # Paths
+  raw_data_dir: 'data/raw'
+  spectrograms_dir: 'data/spectrograms'
+  sliced_dir: 'data/sliced'
+  annotations_dir: 'data/annotations'
+  yolo_dataset_dir: 'data/yolo_dataset'
+
+# ============================================================================
+# Spectrogram Generation
+# ============================================================================
+spectrogram:
+  # Temporal parameters
+  segment_duration: 410e-6    # seconds (410 μs per frame)
+
+  # FFT parameters
+  nperseg: 256                # FFT window size
+  noverlap: 128               # Overlap samples (50% overlap)
+  window: 'hamming'           # Window function
+
+  # Output format
+  image_size: [256, 256]      # [height, width]
+  colormap: 'viridis'         # Options: viridis, plasma, turbo, jet
+
+  # Normalization
+  apply_normalization: true
+  target_mean: 0.5
+  normalization_iterations: 3
+
+# ============================================================================
+# Signal Detection
+# ============================================================================
+detection:
+  # Bluetooth characteristics
+  bluetooth:
+    max_width: 15             # pixels (narrow bandwidth)
+    min_height: 30            # pixels (minimum duration)
+    intensity_threshold: 180  # 0-255 grayscale
+
+  # Sliding window
+  window_size: 5              # Number of consecutive frames
+  stride: 1                   # Step size between windows
+
+  # Cutoff detection
+  edge_width: 10              # pixels to check at edges
+  frequency_tolerance: 20     # pixels for frequency matching
+  min_peak_height: 150        # minimum intensity for peaks
+
+# ============================================================================
+# Channel Slicing
+# ============================================================================
+slicing:
+  # Frequency channels
+  num_frequency_channels: 4   # Divide spectrum into N bands
+
+  # Temporal slicing
+  temporal_slice_duration: 1.0  # seconds
+  temporal_overlap: 0.5         # overlap fraction (0.0 to 1.0)
+
+  # Energy filtering
+  energy_threshold: 0.1         # minimum mean intensity to keep
+
+# ============================================================================
+# YOLO Training
+# ============================================================================
+yolo:
+  # Model
+  model_size: 'yolov8n'       # Options: yolov8n, yolov8s, yolov8m, yolov8l, yolov8x
+
+  # Training parameters
+  epochs: 100
+  batch_size: 16
+  image_size: 256
+  device: 0                   # GPU device (0, 1, 2, etc.) or 'cpu'
+  workers: 4
+
+  # Optimizer
+  optimizer: 'AdamW'
+  lr0: 0.001                  # Initial learning rate
+  lrf: 0.01                   # Final learning rate fraction
+  momentum: 0.937
+  weight_decay: 0.0005
+
+  # Augmentation (safe for spectrograms)
+  augmentation:
+    hsv_h: 0.015              # Hue augmentation
+    hsv_s: 0.7                # Saturation
+    hsv_v: 0.4                # Value/brightness
+    degrees: 0.0              # Rotation (0 for spectrograms)
+    translate: 0.1            # Translation
+    scale: 0.5                # Scaling
+    shear: 0.0                # Shear (0 for spectrograms)
+    perspective: 0.0          # Perspective (0 for spectrograms)
+    flipud: 0.0               # Vertical flip (0 for spectrograms)
+    fliplr: 0.0               # Horizontal flip (0 for spectrograms)
+    mosaic: 1.0               # Mosaic augmentation
+    mixup: 0.0                # Mixup augmentation
+
+  # Validation
+  val: true
+  save_period: 10             # Save checkpoint every N epochs
+
+  # Inference
+  conf_threshold: 0.25        # Confidence threshold
+  iou_threshold: 0.45         # IoU threshold for NMS
+
+  # Paths
+  project: 'models'
+  name: 'rf_signal_detection'
+
+# ============================================================================
+# Dataset Split
+# ============================================================================
+dataset:
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  random_seed: 42
+
+# ============================================================================
+# Signal Classes
+# ============================================================================
+classes:
+  num_classes: 4
+  names:
+    - 'bluetooth'
+    - 'wifi'
+    - 'zigbee'
+    - 'drone'
+
+  # Optional: Class weights for imbalanced datasets
+  # class_weights: [1.0, 0.5, 1.2, 1.5]
+
+# ============================================================================
+# Output and Logging
+# ============================================================================
+output:
+  results_dir: 'results'
+  models_dir: 'models'
+  visualizations_dir: 'results/visualizations'
+  cutoff_detections_dir: 'results/cutoff_detections'
+
+  # Logging
+  verbose: true
+  save_visualizations: true
+  dpi: 150                    # DPI for saved figures
+
+# ============================================================================
+# Performance Metrics
+# ============================================================================
+metrics:
+  target_map50: 0.60          # Target mAP@0.5 for validation
+  target_precision: 0.70      # Target precision for Bluetooth
+  target_fps: 20              # Target inference speed (GPU)
+  max_false_positive_rate: 0.10

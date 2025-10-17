@@ -1,0 +1,51 @@
+# Data files (too large for git)
+data/raw/*.sc16
+data/raw/*.fc32
+data/raw/*.hdr
+data/raw/*.sh
+data/spectrograms/**/*.png
+data/sliced/
+data/yolo/
+
+# Model files
+models/
+runs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Results
+results/*.png
+results/*.jpg
+
+# Test backups
+test_backups/
+idc-backup-*/
+old_scripts/
+
+# Problematic files
+nul

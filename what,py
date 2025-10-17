@@ -1,0 +1,70 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Create two subplots: one with gradient, one without
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 8), dpi=100)
+
+# Define parameters
+freq_range = (2427, 2447)  # Frequency range to display in MHz
+time_range = 250  # Time range in pixels
+height = 512  # Height of the image in pixels
+width = 256   # Width of the image in pixels
+
+# Create blank mask images
+mask_gradient = np.zeros((height, width))
+mask_no_gradient = np.zeros((height, width))
+
+# Map frequency values to pixel rows
+freq_values = np.linspace(freq_range[0], freq_range[1], height)
+
+# Define Bluetooth channels - each 1 MHz wide
+bluetooth_channels = []
+for i in range(20):  # 20 channels in our display range
+    channel_center = 2427.5 + i  # Each channel is 1 MHz apart
+    bluetooth_channels.append(channel_center)
+
+# v6 for gradient version - with pronounced cosine-based gradient
+for i in range(height):
+    freq = freq_values[i]
+    # Find the nearest channel
+    nearest_channel = min(bluetooth_channels, key=lambda x: abs(x - freq))
+    # Calculate distance from channel center
+    distance = abs(freq - nearest_channel)
+    
+    if distance <= 0.5:  # Within a channel bandwidth (1 MHz wide)
+        # Create a more pronounced gradient effect with cosine function
+        intensity = 0.5 + 0.5 * np.cos(np.pi * distance)
+        mask_gradient[i, :] = intensity * 255
+
+# v4 for non-gradient version - using original approach with thin lines
+for i in range(height):
+    freq = freq_values[i]
+    # Find the nearest channel
+    nearest_channel = min(bluetooth_channels, key=lambda x: abs(x - freq))
+    # Calculate distance from channel center
+    distance = abs(freq - nearest_channel)
+    
+    # If at the edge of a channel (distance close to 0.5), add a thin black line
+    if distance > 0.45 and distance <= 0.5:
+        # Add thin black line at channel edges
+        mask_no_gradient[i, :] = 0  # Black line
+    else:
+        # Rest of the channel is white
+        mask_no_gradient[i, :] = 255  # White channel
+
+# Display the masks
+ax1.imshow(mask_gradient, cmap='gray', aspect='auto', origin='upper', 
+          extent=[0, time_range, freq_range[1], freq_range[0]])
+ax1.set_xlabel('Time (pixels)')
+ax1.set_ylabel('Frequency (MHz)')
+ax1.set_title('Bluetooth Channel Mask with Gradient Separation')
+
+ax2.imshow(mask_no_gradient, cmap='gray', aspect='auto', origin='upper', 
+          extent=[0, time_range, freq_range[1], freq_range[0]])
+ax2.set_xlabel('Time (pixels)')
+ax2.set_ylabel('Frequency (MHz)')
+ax2.set_title('Bluetooth Channel Mask without Gradient')
+
+# Show the plots
+plt.tight_layout()
+plt.show()
