@@ -17,12 +17,13 @@ if device == 'cuda':
     print(f"CUDA Version: {torch.version.cuda}")
 
 # Initialize YOLOv12 model
-# Model sizes: yolov12n (nano), yolov12s (small), yolov12m (medium), yolov12l (large), yolov12x (extra-large)
-print("\nInitializing YOLOv12s model...")
-model = YOLO('yolov12s.yaml')  # Start from scratch with YOLOv12-small architecture
+# Model sizes: yolo12n (nano), yolo12s (small), yolo12m (medium), yolo12l (large), yolo12x (extra-large)
+print("\nInitializing YOLOv12n model...")
+model = YOLO('yolo12n.pt')  # Start with pretrained YOLOv12-nano weights (will auto-download)
 
-# Alternatively, you can load pre-trained weights if available:
-# model = YOLO('yolov12s.pt')
+# Alternative: Use other sizes
+# model = YOLO('yolo12s.pt')  # Small
+# model = YOLO('yolo12m.pt')  # Medium
 
 print("\nModel architecture loaded successfully!")
 print("\nTraining Configuration:")
