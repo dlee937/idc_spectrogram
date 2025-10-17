@@ -143,8 +143,8 @@ def detect_signals_in_spectrogram(img_path, debug=False):
 
     return labels
 
-# Process test images from epoch23 spectrograms
-source_dir = Path('data/spectrograms/epoch23')
+# Process test images from test4_2412 spectrograms
+source_dir = Path('data/spectrograms/test4_2412')
 train_img_dir = Path('data/yolo/train/images')
 train_label_dir = Path('data/yolo/train/labels')
 val_img_dir = Path('data/yolo/val/images')
