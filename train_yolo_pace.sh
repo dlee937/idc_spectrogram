@@ -6,8 +6,11 @@
 #SBATCH --gres=gpu:1                 # Request 1 GPU
 #SBATCH -t 16:00:00                  # Time limit (16 hours)
 #SBATCH -p coc-gpu                   # Partition (COC GPU partition)
+#SBATCH -q coc-ice                   # QoS (required for coc-gpu partition)
 #SBATCH -o logs/yolo_train_%j.out    # Output file
 #SBATCH -e logs/yolo_train_%j.err    # Error file
+#SBATCH --mail-type=END,FAIL         # Email notifications
+#SBATCH --mail-user=dlee937@gatech.edu
 
 # Print job info
 echo "=========================================="
