@@ -4,12 +4,10 @@
 #SBATCH -n 8                         # Number of CPU cores
 #SBATCH --mem=64GB                   # Memory per node
 #SBATCH --gres=gpu:1                 # Request 1 GPU
-#SBATCH -t 24:00:00                  # Time limit (24 hours)
-#SBATCH -q inferno                   # Queue/partition (use GPU queue)
+#SBATCH -t 16:00:00                  # Time limit (16 hours)
+#SBATCH -p coc-gpu                   # Partition (COC GPU partition)
 #SBATCH -o logs/yolo_train_%j.out    # Output file
 #SBATCH -e logs/yolo_train_%j.err    # Error file
-#SBATCH --mail-type=END,FAIL         # Email notifications
-#SBATCH --mail-user=dlee937@gatech.edu
 
 # Print job info
 echo "=========================================="
